@@ -16,6 +16,7 @@
 #include "util/aligned_memory.h"
 #include "sfm/sift.h"
 #include "sfm/surf.h"
+#include "sfm/orb.h"
 #include "sfm/defines.h"
 
 SFM_NAMESPACE_BEGIN
@@ -32,6 +33,7 @@ public:
     {
         FEATURE_SIFT = 1 << 0,
         FEATURE_SURF = 1 << 1,
+		FEATURE_ORB = 1 << 2,
         FEATURE_ALL = 0xFF
     };
 
@@ -43,6 +45,7 @@ public:
         FeatureTypes feature_types;
         Sift::Options sift_opts;
         Surf::Options surf_opts;
+		Orb::Options orb_opts;
     };
 
 public:
@@ -67,10 +70,13 @@ public:
     Sift::Descriptors sift_descriptors;
     /** The SURF descriptors. */
     Surf::Descriptors surf_descriptors;
+	/** The ORB descriptors. */
+	Orb::Descriptors orb_descriptors;
 
 private:
     void compute_sift (mve::ByteImage::ConstPtr image);
     void compute_surf (mve::ByteImage::ConstPtr image);
+	void compute_orb (mve::ByteImage::ConstPtr image);
 
 private:
     Options opts;

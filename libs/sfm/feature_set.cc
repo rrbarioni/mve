@@ -37,6 +37,8 @@ FeatureSet::compute_features (mve::ByteImage::Ptr image)
         this->compute_sift(image);
     if (this->opts.feature_types & FEATURE_SURF)
         this->compute_surf(image);
+	if (this->opts.feature_types == FEATURE_ORB)
+		this->compute_orb(image);
 }
 
 void
@@ -102,12 +104,47 @@ FeatureSet::compute_surf (mve::ByteImage::ConstPtr image)
 }
 
 void
+FeatureSet::compute_orb(mve::ByteImage::ConstPtr image)
+{
+	/* Compute features. */
+	Orb::Descriptors descr;
+	{
+		std::cout << "starting orb" << std::endl;
+		Orb orb(this->opts.orb_opts);
+		orb.set_image(image);
+		std::cout << "starting process" << std::endl;
+		orb.process();
+		descr = orb.get_descriptors();
+	}
+
+	/* Sort features by scale for low-res matching. */
+	std::sort(descr.begin(), descr.end(), compare_scale<sfm::Orb::Descriptor>);
+
+	/* Prepare and copy to data structures. */
+	std::size_t offset = this->positions.size();
+	this->positions.resize(offset + descr.size());
+	this->colors.resize(offset + descr.size());
+
+	for (std::size_t i = 0; i < descr.size(); ++i)
+	{
+		Orb::Descriptor const& d = descr[i];
+		this->positions[offset + i] = math::Vec2f(d.x, d.y);
+		image->linear_at(d.x, d.y, this->colors[offset + i].begin());
+	}
+
+	/* Keep ORB descriptors. */
+	std::swap(descr, this->orb_descriptors);
+}
+
+void
 FeatureSet::clear_descriptors (void)
 {
     this->sift_descriptors.clear();
     this->sift_descriptors.shrink_to_fit();
     this->surf_descriptors.clear();
     this->surf_descriptors.shrink_to_fit();
+	this->orb_descriptors.clear();
+	this->orb_descriptors.shrink_to_fit();
 }
 
 SFM_NAMESPACE_END

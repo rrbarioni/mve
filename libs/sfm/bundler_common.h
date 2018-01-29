@@ -7,6 +7,8 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
+#pragma warning(disable : 4996)
+
 #ifndef SFM_BUNDLER_COMMON_HEADER
 #define SFM_BUNDLER_COMMON_HEADER
 
