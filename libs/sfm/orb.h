@@ -34,6 +34,7 @@ public:
 		float y;
 		float scale;
 		float orientation;
+		math::Vector<float, 32> data;
 	};
 
 public:

@@ -109,10 +109,8 @@ FeatureSet::compute_orb(mve::ByteImage::ConstPtr image)
 	/* Compute features. */
 	Orb::Descriptors descr;
 	{
-		std::cout << "starting orb" << std::endl;
 		Orb orb(this->opts.orb_opts);
 		orb.set_image(image);
-		std::cout << "starting process" << std::endl;
 		orb.process();
 		descr = orb.get_descriptors();
 	}
